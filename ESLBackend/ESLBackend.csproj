@@ -9,17 +9,9 @@
 
   <ItemGroup>
     <Compile Remove="Models - Copy\**" />
-    <Compile Remove="NewFolder\**" />
     <Content Remove="Models - Copy\**" />
-    <Content Remove="NewFolder\**" />
     <EmbeddedResource Remove="Models - Copy\**" />
-    <EmbeddedResource Remove="NewFolder\**" />
     <None Remove="Models - Copy\**" />
-    <None Remove="NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Models\CoreDbContext.cs" />
   </ItemGroup>
 
   <ItemGroup>

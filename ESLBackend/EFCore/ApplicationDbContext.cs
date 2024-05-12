@@ -1,18 +1,17 @@
-﻿
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using ESLBackend.Models;
-using static System.Reflection.Metadata.BlobBuilder;
+using Microsoft.AspNetCore.Identity;
+using ESLBackend.models;
 
 public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) :
         base(options)
     { }
-    public DbSet<Book> Books { get; set; }
 
+    // DbSet for Book entity
+    //public DbSet<Book> Books { get; set; }
 
-
-
+    // DbSet for MeetingRoom entity
+    public DbSet<MeetingRoom> MeetingRooms { get; set; }
 }
