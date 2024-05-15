@@ -14,4 +14,6 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
     // DbSet for MeetingRoom entity
     public DbSet<MeetingRoom> MeetingRooms { get; set; }
+    public DbSet<BookingRoom> BookingRooms { get; set; }
+
 }
