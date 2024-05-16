@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using ESLBackend.models;
+using ESLBackend.Models;
 
 public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {
@@ -14,4 +15,6 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
     // DbSet for MeetingRoom entity
     public DbSet<MeetingRoom> MeetingRooms { get; set; }
+
+    public DbSet<Templates> Templates { get; set; }
 }
