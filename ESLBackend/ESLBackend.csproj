@@ -14,8 +14,8 @@
     <None Remove="Models - Copy\**" />
   </ItemGroup>
 
-
-<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.4" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5" NoWarn="NU1605" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.5" NoWarn="NU1605" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.5" />
@@ -30,7 +30,6 @@
     <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="2.18.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.1" />
-
   </ItemGroup>
 
 </Project>

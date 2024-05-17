@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication;
+
 using System.Security.Claims;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +14,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
 
 
 namespace ESLBackend.Controllers
 {
- 
+
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
@@ -137,7 +138,7 @@ namespace ESLBackend.Controllers
         {
             new Claim(ClaimTypes.Email, userEmail),
             new Claim(ClaimTypes.NameIdentifier, userId),
-           
+
         };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -187,7 +188,7 @@ namespace ESLBackend.Controllers
 
           password = 12345678,
           username = "testing"
-       
+
       }),
       Encoding.UTF8,
       "application/json");
@@ -218,10 +219,12 @@ namespace ESLBackend.Controllers
 
 
             public string body { get; set; }
-           public  string message { get; set; }
+            public string message { get; set; }
 
 
 
 
         }
+    }
+
 }
