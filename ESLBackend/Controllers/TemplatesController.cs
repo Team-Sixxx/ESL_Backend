@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Threading.Tasks;
 using ESLBackend.Models;
 
 namespace ESLBackend.Controllers
@@ -24,7 +25,7 @@ namespace ESLBackend.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetTemplate(int id)
+        public IActionResult GetTemplate(string id)
         {
             var template = _context.Templates.FirstOrDefault(t => t.Id == id);
             if (template == null)
@@ -35,15 +36,15 @@ namespace ESLBackend.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateTemplate(Templates template)
+        public async Task<IActionResult> CreateTemplate(Templates template)
         {
             _context.Templates.Add(template);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetTemplate), new { id = template.Id }, template);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateTemplate(int id, Templates template)
+        public async Task<IActionResult> UpdateTemplate(string id, Templates template)
         {
             if (id != template.Id)
             {
@@ -56,20 +57,26 @@ namespace ESLBackend.Controllers
                 return NotFound();
             }
 
-            existingTemplate.Type = template.Type;
-            existingTemplate.StoreNumber = template.StoreNumber;
+            existingTemplate.CreatedBy = template.CreatedBy;
+            existingTemplate.CreatedTime = template.CreatedTime;
+            existingTemplate.LastUpdatedBy = template.LastUpdatedBy;
+            existingTemplate.LastUpdatedTime = template.LastUpdatedTime;
             existingTemplate.ShopCode = template.ShopCode;
-            existingTemplate.Name = template.Name;
-            existingTemplate.Price1 = template.Price1;
-            existingTemplate.Price2 = template.Price2;
+            existingTemplate.GoodsCode = template.GoodsCode;
+            existingTemplate.GoodsName = template.GoodsName;
+            existingTemplate.TemplateType = template.TemplateType;
+            existingTemplate.Upc = template.Upc;
+            existingTemplate.Items = template.Items;
+            existingTemplate.Version = template.Version;
+            existingTemplate.HashCode = template.HashCode;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteTemplate(int id)
+        public async Task<IActionResult> DeleteTemplate(string id)
         {
             var template = _context.Templates.FirstOrDefault(t => t.Id == id);
             if (template == null)
@@ -78,7 +85,7 @@ namespace ESLBackend.Controllers
             }
 
             _context.Templates.Remove(template);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
