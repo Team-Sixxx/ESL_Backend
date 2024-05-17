@@ -14,6 +14,10 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
     public DbSet<Templates> Templates { get; set; }
 
+    public DbSet<Templates.Item> Items { get; set; }
+
+    //public DbSet<Templates.upc> Üpc { get; set; }
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,6 +27,13 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
         // Configure the primary key for User
         modelBuilder.Entity<User>()
             .HasKey(u => u.Id);
+
+
+        //modelBuilder.Entity<Templates.Item>()
+        // .HasNoKey();
+
+
+
 
         // Configure the optional relationship with Organization
         modelBuilder.Entity<User>()

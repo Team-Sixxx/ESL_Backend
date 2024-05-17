@@ -3,6 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using ESLBackend.Models;
+using static ESLBackend.Controllers.UserController;
+using System.Text.Json;
+using System.Text;
+using System.Dynamic;
+using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
 
 namespace ESLBackend.Controllers
 {
@@ -25,7 +31,7 @@ namespace ESLBackend.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetTemplate(string id)
+        public async Task<IActionResult> GetTemplate(string id)
         {
             var template = _context.Templates.FirstOrDefault(t => t.Id == id);
             if (template == null)
@@ -35,7 +41,56 @@ namespace ESLBackend.Controllers
             return Ok(template);
         }
 
-        [HttpPost]
+        private static readonly HttpClient client = new HttpClient();
+
+
+        [HttpPost("{id}")]
+        public async Task<IActionResult> PatchandPatchGoods(Models.Templates template)
+        {
+            var ESLtoken = HttpContext.Session.GetString("token");
+
+            Models.PostTemplates a = Models.Templates.MappedTemplate(template);
+
+            string serializedJson = JsonSerializer.Serialize(a);
+
+            // Print the JSON content before posting
+            Console.WriteLine("JSON Content:");
+            Console.WriteLine(serializedJson);
+
+
+            using StringContent jsonContent = new(
+              JsonSerializer.Serialize(a),
+              Encoding.UTF8,
+              "application/json");
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ESLtoken);
+
+            using HttpResponseMessage response = await client.PostAsync("http://162.62.125.25:5003/api/Goods/save", jsonContent);
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(responseBody);
+
+            var token = JsonSerializer.Deserialize<Token>(responseBody);
+
+            if (token?.Message == "success")
+            {
+                return Ok(token.Message);
+            }
+            else
+            {
+                return BadRequest(token?.Message);
+            }
+        }
+ 
+
+    public class Token
+    {
+        [JsonPropertyName("message")]
+        public string Message { get; set; }
+    }
+
+
+    [HttpPost]
         public async Task<IActionResult> CreateTemplate(Templates template)
         {
             _context.Templates.Add(template);
@@ -65,7 +120,7 @@ namespace ESLBackend.Controllers
             existingTemplate.GoodsCode = template.GoodsCode;
             existingTemplate.GoodsName = template.GoodsName;
             existingTemplate.TemplateType = template.TemplateType;
-            existingTemplate.Upc = template.Upc;
+           // existingTemplate.Upc = template.Upc;
             existingTemplate.Items = template.Items;
             existingTemplate.Version = template.Version;
             existingTemplate.HashCode = template.HashCode;
