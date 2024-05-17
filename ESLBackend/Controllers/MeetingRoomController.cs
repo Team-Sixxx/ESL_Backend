@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ESLBackend.models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ESLBackend.Controllers
 {
@@ -17,6 +18,7 @@ namespace ESLBackend.Controllers
             _context = context;
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult GetMeetingRooms()
         {

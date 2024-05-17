@@ -12,11 +12,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using ESLBackend.Utils;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.Extensions.Options;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,110 +44,188 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 */
 
+builder.Services.AddScoped<DataSeeder>();
 
-//builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-//{
-//    // Configure Identity options if needed
-//})
-//.AddEntityFrameworkStores<ApplicationDbContext>()
-//.AddDefaultTokenProviders();
+var services = builder.Services;
+var configuration = builder.Configuration;
 
-//builder.Services.AddScoped<ITokenService, JwtTokenService>();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie();
+//builder.Services
+//    .AddAuthentication(options =>
+//    {
+//        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//        options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+//    })
+//    .AddCookie()
+//    .AddGoogle(options =>
+//    {
+//        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+//        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+//        options.SaveTokens = true;
+//    });
+
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddControllers();
+//builder.Services.AddSession();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen(c =>
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "ESLBackend", Version = "v1" });
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer"
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
     });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-            },
-            Array.Empty<string>()
-        }
-    });
+ 
+
 });
 
-// Retrieve the configuration
-var configuration = builder.Configuration;
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".ESLBackend.Session";
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Adjust timeout as needed
+});
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = configuration["Jwt:Issuer"], // Your issuer from appsettings.json
-            ValidAudience = configuration["Jwt:Audience"], // Your audience from appsettings.json
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"])) // Your secret key from appsettings.json
-        };
-    });
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
 
 
-//using (var serviceScope = builder.Services.BuildServiceProvider().CreateScope())
-//{
-//    var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//    var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-//    var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-//    // Check if the admin role exists
-//    var adminRole = await roleManager.FindByNameAsync("Admin");
-//    if (adminRole == null)
-//    {
-//        // Create the admin role if it doesn't exist
-//        adminRole = new IdentityRole("Admin");
-//        await roleManager.CreateAsync(adminRole);
-//    }
+//options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+//options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-//    // Check if the admin user exists
-//    var adminUser = await userManager.FindByEmailAsync("admin@example.com");
-//    if (adminUser == null)
-//    {
-//        // Create the default admin user
-//        adminUser = new IdentityUser { UserName = "admin@example.com", Email = "admin@example.com" };
-//        await userManager.CreateAsync(adminUser, "YourStrongPassword");
 
-//        // Assign admin role to the user
-//        await userManager.AddToRoleAsync(adminUser, "Admin");
-//    }
-//}
+
+
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    // Configure Identity options if needed
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+ .AddCookie(options =>
+ {
+     options.AccessDeniedPath = "/login";
+     options.ExpireTimeSpan = TimeSpan.FromDays(30);
+     options.LoginPath = "/login";
+     options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+     options.SlidingExpiration = true;
+     options.ExpireTimeSpan = TimeSpan.FromDays(30);
+
+     // Set SameSite mode to Lax
+     options.Cookie.SameSite = SameSiteMode.Lax;
+ })
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.CallbackPath = "/signin-google";
+    options.SaveTokens = true;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+
+    };
+});
+
 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+
+
+//app.MapIdentityApi<IdentityUser>();
+
+
+//app.UseSession();
 if (app.Environment.IsDevelopment())
 {
+
+
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ESLBackend"));
+    app.UseSwaggerUI(o =>
+    {
+      
+      
+    });
+
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+        await dataSeeder.SeedTestUsersAsync();
+    }
+
 }
 
 app.UseHttpsRedirection();
 
+var cookiePolicyOptions = new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Lax,
+    HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
+    Secure = CookieSecurePolicy.Always,
+};
+
+
+
 app.UseRouting();
+
+
+
+app.UseCors(builder =>
+{
+    builder.AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+});
+
+
+app.UseCookiePolicy(cookiePolicyOptions);
 
 
 app.UseAuthentication(); // Add this line to enable authentication
 app.UseAuthorization();
+app.UseSession();
+
+
 
 app.UseEndpoints(endpoints =>
 {
