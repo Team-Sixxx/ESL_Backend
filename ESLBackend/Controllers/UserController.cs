@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Text.Json;
 
 
 namespace ESLBackend.Controllers
@@ -159,5 +160,68 @@ namespace ESLBackend.Controllers
         }
 
 
-    }
+
+        private static readonly HttpClient client = new HttpClient();
+
+
+        [AllowAnonymous]
+        [HttpGet("get-token")]
+        public async Task<IActionResult> GetToken()
+        {
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(); // Return 401 Unauthorized if not authenticated
+            }
+
+            // You can access user claims here if needed
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+
+
+            try
+            {
+
+                using StringContent jsonContent = new(
+      JsonSerializer.Serialize(new
+      {
+
+          password = 12345678,
+          username = "testing"
+       
+      }),
+      Encoding.UTF8,
+      "application/json");
+
+                using HttpResponseMessage response = await client.PostAsync("http://162.62.125.25:5003/api/login", jsonContent);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                // Above three lines can be replaced with new helper method below
+                // string responseBody = await client.GetStringAsync(uri);
+
+                Console.WriteLine(responseBody);
+
+
+                Token? token = JsonSerializer.Deserialize<Token>(responseBody);
+
+                HttpContext.Session.SetString("token", token?.body);
+
+                return Ok(new { Message = token?.body });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        public class Token
+        {
+
+
+            public string body { get; set; }
+           public  string message { get; set; }
+
+
+
+
+        }
 }
