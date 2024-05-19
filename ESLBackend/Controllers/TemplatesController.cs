@@ -44,10 +44,15 @@ namespace ESLBackend.Controllers
         private static readonly HttpClient client = new HttpClient();
 
 
-        [HttpPost("{id}")]
-        public async Task<IActionResult> PatchandPatchGoods(Models.Templates template)
+        [HttpPost("Goods")]
+        public async Task<IActionResult> PostandPatchGoods(Models.Templates template)
         {
             var ESLtoken = HttpContext.Session.GetString("token");
+
+            if (string.IsNullOrEmpty(ESLtoken))
+            {
+                return Unauthorized("Token is missing");
+            }
 
             Models.PostTemplates a = Models.Templates.MappedTemplate(template);
 
@@ -81,9 +86,54 @@ namespace ESLBackend.Controllers
                 return BadRequest(token?.Message);
             }
         }
- 
 
-    public class Token
+
+
+
+        [HttpPost("bind/esl")]
+        public async Task<IActionResult> BindESL(Models.BindESL ESL)
+        {
+            var ESLtoken = HttpContext.Session.GetString("token");
+
+            if (string.IsNullOrEmpty(ESLtoken))
+            {
+                return Unauthorized("Token is missing");
+            }
+
+            Models.BindESL a = Models.BindESL.BindESLMapper(ESL);
+
+            string serializedJson = JsonSerializer.Serialize(a);
+
+            using StringContent jsonContent = new(
+              serializedJson,
+              Encoding.UTF8,
+              "application/json");
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ESLtoken);
+
+            using HttpResponseMessage response = await client.PostAsync("http://162.62.125.25:5003/api/esl/Tag/bind", jsonContent);
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(responseBody);
+
+            var token = JsonSerializer.Deserialize<Token>(responseBody);
+
+            if (token?.Message == "success")
+            {
+                return Ok(token.Message);
+            }
+            else
+            {
+                return BadRequest(token?.Message);
+            }
+        }
+
+
+
+
+
+
+        public class Token
     {
         [JsonPropertyName("message")]
         public string Message { get; set; }

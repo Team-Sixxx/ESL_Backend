@@ -39,73 +39,81 @@ namespace ESLBackend.Controllers
 
 
         [AllowAnonymous]
-        [HttpGet("signin-google")]
-        public async Task<IActionResult> SignInGoogle()
+        [HttpGet]
+        [Route("login")]
+        public async Task<IActionResult> LoginGoogle()
         {
-            // Generate a unique state value
-            //var state = Guid.NewGuid().ToString();
-
-            //// Store the state value in the distributed cache
-            //var cacheKey = $"GoogleAuthenticationState:{state}";
-            //await distributedCache.SetStringAsync(cacheKey, "valid", new DistributedCacheEntryOptions
-            //{
-            //    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) // Set an expiration time
-            //});
-
-            var state = Guid.NewGuid().ToString();
-            HttpContext.Session.SetString("GoogleCsrfToken", state);
-
-            await HttpContext.ChallengeAsync("Google", new AuthenticationProperties()
-            {
-                //RedirectUri = Url.Action("GoogleResponse", "Auth", null, Request.Scheme),
-                RedirectUri = "https://localhost:7154/User/google-signin-callback",
-                Items =
-        {
-            { "state", state }
+            return await SignInGoogle();
         }
-            });
-
-            //          var properties = new AuthenticationProperties
-            //{
-            //              RedirectUri = "https://localhost:7154/User/google-signin-callback",
-            //          };
 
 
-            //var properties = new AuthenticationProperties
-            //{
-            //    RedirectUri = "/User/google-signin-callback"
 
-            //};
-
-            //_logger.LogInformation($"Callback Sent. State: {state}");
-            var googleAuthUrl = HttpContext.Response.Headers["Location"];
-
-            // Return the URL as a response
-
-            //return Redirect(googleAuthUrl);
-            return Ok(new { GoogleAuthUrl = googleAuthUrl });
-
-            //return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-
-        }
 
 
         [AllowAnonymous]
-        [Authorize]
-        [HttpGet("secure-endpoint")]
-        public IActionResult SecureEndpoint()
+        [HttpGet("signin-google")]
+        public async Task<IActionResult> SignInGoogle()
         {
-            // Check if the user is authenticated using cookies
-            if (!User.Identity.IsAuthenticated)
+            var state = Guid.NewGuid().ToString();
+            HttpContext.Session.SetString("GoogleCsrfToken", state);
+
+            var properties = new AuthenticationProperties
             {
-                return Unauthorized(); // Return 401 Unauthorized if not authenticated
-            }
+                RedirectUri = Url.Action("GoogleSignInCallback", "User", null, Request.Scheme),
+                Items = { { "state", state } }
+            };
 
-            // You can access user claims here if needed
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, properties);
 
-            return Ok("You are authorized to access this secure endpoint!");
+            var googleAuthUrl = HttpContext.Response.Headers["Location"].ToString();
+
+            return Ok(new { GoogleAuthUrl = googleAuthUrl });
         }
+
+
+
+
+        //[AllowAnonymous]
+        //[HttpGet("signin-google")]
+        //public async Task<IActionResult> SignInGoogle()
+        //{
+        //    // Generate a unique state value
+        //    var state = Guid.NewGuid().ToString();
+
+        //    //// Store the state value in the distributed cache
+        //    //var cacheKey = $"GoogleAuthenticationState:{state}";
+        //    //await distributedCache.SetStringAsync(cacheKey, "valid", new DistributedCacheEntryOptions
+        //    //{
+        //    //    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) // Set an expiration time
+        //    //});
+
+        //  //  var state = Guid.NewGuid().ToString();
+        //    HttpContext.Session.SetString("GoogleCsrfToken", state);
+
+        //    await HttpContext.ChallengeAsync("Google", new AuthenticationProperties()
+        //    {
+        //        //RedirectUri = Url.Action("GoogleResponse", "Auth", null, Request.Scheme),
+        //        RedirectUri = "https://localhost:7154/User/google-signin-callback",
+        //        Items =
+        //{
+        //    { "state", state }
+        //}
+        //    });
+
+
+        //    var googleAuthUrl = HttpContext.Response.Headers["Location"];
+
+        //    // Return the URL as a response
+
+        //    //return Redirect(googleAuthUrl);
+        //    return Ok(new { GoogleAuthUrl = googleAuthUrl });
+
+
+        //    //return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+
+        //}
+
+
 
         [AllowAnonymous]
         [HttpGet("google-signin-callback")]
@@ -152,13 +160,121 @@ namespace ESLBackend.Controllers
                 // Set session variable
                 HttpContext.Session.SetString("IsAuthenticated", "true");
 
-                return Ok(new { Message = "User signed in successfully." });
+
+                if (!User.Identity.IsAuthenticated)
+                {
+                    // Return 401 Unauthorized if not authenticated
+                    return Ok();
+                } else
+                {
+
+                    return Redirect(url: "http://localhost:5173/");
+
+                }
+
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
+
+
+
+
+        [AllowAnonymous]
+        [Authorize]
+        [HttpGet("profile")]
+        public IActionResult GetProfile()
+        {
+            // Check if the user is authenticated using the cookies set inside callback
+            //var userEmai1 = User.FindFirstValue(ClaimTypes.Email);
+            if (!User.Identity.IsAuthenticated)
+            {
+                // Return 401 Unauthorized if not authenticated
+                return Unauthorized(); 
+            }
+
+            // access user claims
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var name = User.FindFirstValue(ClaimTypes.Actor);
+
+            return Ok(new {email = userEmail, name = name});
+        }
+
+
+
+
+
+
+
+
+
+        [AllowAnonymous]
+        [Authorize]
+        [HttpGet("secure-endpoint")]
+        public IActionResult SecureEndpoint()
+        {
+            // Check if the user is authenticated using cookies
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(); // Return 401 Unauthorized if not authenticated
+            }
+
+            // You can access user claims here if needed
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+
+            return Ok("You are authorized to access this secure endpoint!");
+        }
+
+
+
+
+
+        //          var properties = new AuthenticationProperties
+        //{
+        //              RedirectUri = "https://localhost:7154/User/google-signin-callback",
+        //          };
+
+
+        //var properties = new AuthenticationProperties
+        //{
+        //    RedirectUri = "/User/google-signin-callback"
+
+        //};
+
+        //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+        //  new ClaimsPrincipal());
+
+
+        //_logger.LogInformation($"Callback Sent. State: {state}");
+
+
+
+
+
+
+        //[AllowAnonymous]
+        //[HttpGet("signin-google")]
+        //public async Task<IActionResult> SignInGoogle()
+        //{
+        //    // Generate a unique state value
+        //    var state = Guid.NewGuid().ToString();
+
+        //    // Store the state value in the session
+        //    HttpContext.Session.SetString("GoogleCsrfToken", state);
+
+        //    var properties = new AuthenticationProperties()
+        //    {
+        //        RedirectUri = Url.Action("GoogleResponse", "Auth", null, Request.Scheme),
+        //        Items = { { "state", state } }
+        //    };
+
+        //    return Challenge(properties, "Google");
+        //}
+
+
 
 
 
@@ -170,10 +286,10 @@ namespace ESLBackend.Controllers
         public async Task<IActionResult> GetToken()
         {
 
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(); // Return 401 Unauthorized if not authenticated
-            }
+            //if (!User.Identity.IsAuthenticated)
+            //{
+            //    return Unauthorized(); // Return 401 Unauthorized if not authenticated
+            //}
 
             // You can access user claims here if needed
             var userEmail = User.FindFirstValue(ClaimTypes.Email);

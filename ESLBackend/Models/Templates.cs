@@ -21,6 +21,9 @@ namespace ESLBackend.Models
         [JsonPropertyName("createdTime")]
         public DateTime CreatedTime { get; set; }
 
+        [JsonPropertyName("template")]
+        public string Template { get; set; }
+
         [JsonPropertyName("lastUpdatedBy")]
         public string LastUpdatedBy { get; set; }
 
@@ -80,9 +83,10 @@ namespace ESLBackend.Models
                 Id = GenerateRandomId(),
                 CreatedBy = "System",
                 CreatedTime = DateTime.Now,
+                Template = t.Template,
                 LastUpdatedBy = "System",
                 LastUpdatedTime = t.LastUpdatedTime,
-                ShopCode = "0001",
+                ShopCode = "0003",
                 GoodsCode = t.GoodsCode,
                 GoodsName = t.GoodsName,
                 TemplateType = t.TemplateType,
@@ -134,6 +138,9 @@ namespace ESLBackend.Models
 
         [JsonPropertyName("createdTime")]
         public DateTime CreatedTime { get; set; }
+
+        [JsonPropertyName("template")]
+        public string Template { get; set; }
 
         [JsonPropertyName("lastUpdatedBy")]
         public string LastUpdatedBy { get; set; }
