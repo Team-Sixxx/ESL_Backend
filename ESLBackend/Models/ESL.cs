@@ -6,9 +6,10 @@ namespace ESLBackend.Models
 {
     public class ESL
     {
-        public int? Id { get; set; }
-        public int? StoreNumber { get; set; }
-        public int? TagId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public int StoreNumber { get; set; }
+        public int TagId { get; set; }
         // You can add more properties as needed
     }
 
@@ -16,24 +17,27 @@ namespace ESLBackend.Models
 
     public class BindESL
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
         [JsonPropertyName("shopCode")]
-        public string? ShopCode { get; set; }
+        public string ShopCode { get; set; }
 
         [JsonPropertyName("binds")]
-        public List<Bind>? Binds { get; set; }
+        public Bind Binds { get; set; }
 
 
 
-        public static BindESL BindESLMapper(BindESL bindESL)
+        public static BindESL2 BindESLMapper(BindESL bindESL)
         {
 
 
 
-            return new BindESL
+            return new BindESL2
             {
 
                 ShopCode = "0003",
-                Binds = bindESL.Binds,
+                Binds = new List<Bind> { bindESL.Binds }
 
 
             };
@@ -44,16 +48,61 @@ namespace ESLBackend.Models
 
     }
 
-    public class Bind
-    {
-        [JsonPropertyName("tagID")]
-        public string? TagID { get; set; }
 
-        [JsonPropertyName("goodsCode")]
-        public string? GoodsCode { get; set; }
+
+
+
+
+
+
+
+
+    public class BindESL2
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        [JsonPropertyName("shopCode")]
+        public string ShopCode { get; set; }
+
+        [JsonPropertyName("binds")]
+        public List<Bind> Binds { get; set; }
+
+
+
+
+
+
     }
 
 
+
+
+
+
+
+
+
+
+
+    public class Bind
+    {
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+
+        [JsonPropertyName("tagID")]
+        public string TagID { get; set; }
+
+        
+
+        [JsonPropertyName("goodsCode")]
+        public string GoodsCode { get; set; }
+    }
+
+
+   
 
 
 

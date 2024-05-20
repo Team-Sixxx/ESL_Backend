@@ -100,7 +100,7 @@ namespace ESLBackend.Controllers
                 return Unauthorized("Token is missing");
             }
 
-            Models.BindESL a = Models.BindESL.BindESLMapper(ESL);
+            Models.BindESL2 a = Models.BindESL.BindESLMapper(ESL);
 
             string serializedJson = JsonSerializer.Serialize(a);
 

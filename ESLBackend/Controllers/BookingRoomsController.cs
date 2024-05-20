@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ESLBackend.models;
+
 namespace ESLBackend.Controllers
 {
     [ApiController]
@@ -26,7 +26,7 @@ namespace ESLBackend.Controllers
         [HttpGet("{id}")]
         public IActionResult GetBookingRoom(int id)
         {
-            var bookingRoom = _context.BookingRooms.FirstOrDefault(r => r.Id == id);
+            var bookingRoom = _context.BookingRooms.FirstOrDefault(r => r.MeetingRoomId == id);
             if (bookingRoom == null)
             {
                 return NotFound();
@@ -35,15 +35,55 @@ namespace ESLBackend.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateBookingRoom(BookingRoom room)
+        public IActionResult CreateBookingRoom(Models.Booking room)
         {
+            // Ensure that the start time is before the end time
+            if (room.StartTime >= room.EndTime)
+            {
+                return BadRequest(new { Message = "End time must be after start time." });
+            }
+
+
+
+
+
+
+            // Get the current date and time
+            DateTime currentDateTime = DateTime.Now;
+
+            // Set the start time to the current date and time
+            room.StartTime = currentDateTime;
+
+            // Add 2 hours to the current date and time to get the end time
+            DateTime endDateTime = currentDateTime.AddHours(2);
+            room.EndTime = endDateTime;
+
+
+
+
+
+            // Check for overlapping bookings in the same room
+            var overlappingBooking = _context.BookingRooms
+                .Where(r => r.MeetingRoomId == room.MeetingRoomId)
+                .Where(r => r.StartTime < room.EndTime && room.StartTime < r.EndTime)
+                .FirstOrDefault();
+
+            // If there's an overlapping booking, return a conflict response
+            if (overlappingBooking != null)
+            {
+                return Conflict(new { Message = "The room is already booked for the specified time period." });
+            }
+
+            // If there's no overlap, proceed with the booking
             _context.BookingRooms.Add(room);
             _context.SaveChanges();
             return CreatedAtAction(nameof(GetBookingRoom), new { id = room.Id }, room);
         }
 
+
+
         [HttpPut("{id}")]
-        public IActionResult UpdateBookingRoom(int id, BookingRoom room)
+        public IActionResult UpdateBookingRoom(int id, Models.Booking room)
         {
             if (id != room.Id)
             {
@@ -57,9 +97,9 @@ namespace ESLBackend.Controllers
             }
 
             existingRoom.Id = room.Id;
-            existingRoom.Date = room.Date;
-            existingRoom.Time = room.Time;
-            existingRoom.Duration = room.Duration;
+            existingRoom.EndTime = room.EndTime;
+            existingRoom.StartTime = room.StartTime;
+            
 
 
             _context.SaveChanges();

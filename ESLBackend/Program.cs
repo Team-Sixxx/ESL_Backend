@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.Extensions.Options;
+using ESLBackend.Utils;
 
 
 //var builder = WebApplication.CreateBuilder(args);
@@ -254,25 +255,26 @@ using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//{
-//    if (builder.Environment.IsDevelopment())
-//    {
-
-//        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-//        //options.UseInMemoryDatabase("AppDb");
-//    }
-//    else
-//    {
-//        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-//    }
-//});
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    if (builder.Environment.IsDevelopment())
+    {
+
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+           options.UseMySql(connectionString, ServerVersion.AutoDetect((connectionString) + ";SslMode=None"));
+        //options.UseInMemoryDatabase("AppDb");
+    }
+    else
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
 });
+
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//{
+//    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+//    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+//});
 
 builder.Services.AddScoped<DataSeeder>();
 
@@ -343,6 +345,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });
+
+builder.Services.AddHostedService<BookingCheckerService>();
 
 var app = builder.Build();
 

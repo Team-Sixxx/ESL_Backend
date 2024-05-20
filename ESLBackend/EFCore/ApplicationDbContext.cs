@@ -10,7 +10,11 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Templates.Item> Items { get; set; }
     public DbSet<Templates.Upc> Upcs { get; set; }
     public DbSet<MeetingRoom> MeetingRooms { get; set; }
-    public DbSet<BookingRoom> BookingRooms { get; set; }
+    public DbSet<Booking> BookingRooms { get; set; }
+
+    public DbSet<ESL> ESLs { get; set; }
+    public DbSet<BindESL> BindESLs { get; set; }
+    public DbSet<Bind> Binds { get; set; }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Organization> Organizations { get; set; }
@@ -18,6 +22,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,6 +42,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .WithOne(i => i.Templates)
             .HasForeignKey(i => i.TemplatesId);
 
+
+
         modelBuilder.Entity<Templates>()
             .HasMany(t => t.Upcs)
             .WithOne(u => u.Templates)
@@ -55,5 +62,24 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .HasForeignKey(u => u.OrganizationId) // Use the foreign key property
             .IsRequired(false); // Organization is optional
 
+
+        modelBuilder.Entity<ESL>()
+          .HasKey(e => e.Id);
+
+        modelBuilder.Entity<BindESL>()
+            .HasKey(b => b.Id);
+
+        modelBuilder.Entity<Bind>()
+            .HasKey(b => b.Id);
+
+        modelBuilder.Entity<BindESL>()
+            .HasOne(b => b.Binds)
+            .WithOne()
+            .HasForeignKey<BindESL>(b => b.Id)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+
     }
+
 }

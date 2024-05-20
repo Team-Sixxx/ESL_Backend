@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESLBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240520121054_InitialCreate")]
+    [Migration("20240520212011_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -23,6 +23,99 @@ namespace ESLBackend.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("ESLBackend.Models.Bind", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BindESLId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GoodsCode")
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "goodsCode");
+
+                    b.Property<string>("TagID")
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "tagID");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BindESLId");
+
+                    b.ToTable("Binds");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "binds");
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.BindESL", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ShopCode")
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "shopCode");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BindESLs");
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.Booking", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("MeetingRoomId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("User")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BookingRooms");
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.ESL", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<int?>("StoreNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ESLs");
+                });
 
             modelBuilder.Entity("ESLBackend.Models.Organization", b =>
                 {
@@ -450,6 +543,17 @@ namespace ESLBackend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ESLBackend.Models.Bind", b =>
+                {
+                    b.HasOne("ESLBackend.Models.BindESL", "BindESL")
+                        .WithMany("Binds")
+                        .HasForeignKey("BindESLId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BindESL");
+                });
+
             modelBuilder.Entity("ESLBackend.Models.Templates+Item", b =>
                 {
                     b.HasOne("ESLBackend.Models.Templates", "Templates")
@@ -530,6 +634,11 @@ namespace ESLBackend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.BindESL", b =>
+                {
+                    b.Navigation("Binds");
                 });
 
             modelBuilder.Entity("ESLBackend.Models.Templates", b =>
