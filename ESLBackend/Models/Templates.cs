@@ -1,12 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Reflection.Metadata;
 using System.Text.Json.Serialization;
-using static ESLBackend.Models.Templates;
-
 
 namespace ESLBackend.Models
 {
@@ -23,7 +18,7 @@ namespace ESLBackend.Models
         public DateTime? CreatedTime { get; set; }
 
         [JsonPropertyName("template")]
-        public string? Template { get; set; }
+        public string? TemplateContent { get; set; }
 
         [JsonPropertyName("lastUpdatedBy")]
         public string? LastUpdatedBy { get; set; }
@@ -43,8 +38,8 @@ namespace ESLBackend.Models
         [JsonPropertyName("templateType")]
         public string? TemplateType { get; set; }
 
-        [JsonPropertyName("upc")]
-        public List<Upc>? Upcs { get; set; }
+        [JsonPropertyName("upcs")]
+        public List<Upc> Upcs { get; set; }
 
         [JsonPropertyName("items")]
         public List<Item> Items { get; set; }
@@ -55,12 +50,16 @@ namespace ESLBackend.Models
         [JsonPropertyName("hashCode")]
         public string? HashCode { get; set; }
 
+        internal static PostTemplates MappedTemplate(Templates template)
+        {
+            throw new NotImplementedException();
+        }
+
         public class Item
         {
             [Key]
-
+            public int Id { get; set; }
             public string? ShopCode { get; set; }
-            [Key]
             public string? GoodsCode { get; set; }
             public string GoodsName { get; set; }
             public string Upc1 { get; set; }
@@ -76,92 +75,18 @@ namespace ESLBackend.Models
             public string SalTimeStart { get; set; }
             public string SalTimeEnd { get; set; }
             public string PriceClerk { get; set; }
+            public string TemplatesId { get; set; }
+            public Templates Templates { get; set; }
         }
-
-
-
 
         public class Upc
         {
             [Key]
+            public int Id { get; set; }
             public string GoodsCode { get; set; }
-
-
-
+            public string TemplatesId { get; set; }
+            public Templates Templates { get; set; }
         }
-
-
-        public static PostTemplates MappedTemplate(Models.Templates t)
-        {
-            return new PostTemplates
-            {
-                Id = GenerateRandomId(),
-                CreatedBy = "System",
-                CreatedTime = DateTime.Now,
-                Template = t.Template,
-                LastUpdatedBy = "System",
-                LastUpdatedTime = t.LastUpdatedTime,
-                ShopCode = "0003",
-                GoodsCode = t.GoodsCode,
-                GoodsName = t.GoodsName,
-                TemplateType = t.TemplateType,
-                //Upc = new List<string> { , t.GoodsCode },
-                Upc = ConvertUpcToList(t.Upcs),
-                Items = ConvertItemsToList(t.Items),
-                Version = t.Version + 1,
-                HashCode = Guid.NewGuid().ToString("N").ToUpper()
-            };
-        }
-
-
-        private static List<string> ConvertItemsToList(List<Item> items)
-        {
-            List<string> itemList = new List<string>();
-
-            foreach (var item in items)
-            {
-                itemList.AddRange(new string[] {
-            item.ShopCode, item.GoodsCode, item.GoodsName, item.Upc1, item.Upc2,
-            item.Upc3, item.Price1, item.Price2, item.Price3, item.Origin,
-            item.Spec, item.Unit, item.Raid, item.SalTimeStart, item.SalTimeEnd, item.PriceClerk
-        });
-            }
-
-            return itemList;
-        }
-
-
-
-
-        private static List<string> ConvertUpcToList(List<Upc> upcs)
-        {
-            List<string> upcList = new List<string>();
-
-            foreach (var item in upcs)
-            {
-                upcList.Add(item.GoodsCode);
-            }
-
-            return upcList;
-        }
-
-
-
-
-
-
-
-        private static string GenerateRandomId()
-        {
-            Random random = new Random();
-            int[] parts = new int[3];
-            for (int i = 0; i < parts.Length; i++)
-            {
-                parts[i] = random.Next(0, 10000);
-            }
-            return string.Join("", parts.Select(p => p.ToString("D4")));
-        }
-
     }
 
     public class PostTemplates
@@ -177,7 +102,7 @@ namespace ESLBackend.Models
         public DateTime? CreatedTime { get; set; }
 
         [JsonPropertyName("template")]
-        public string? Template { get; set; }
+        public string? TemplateContent { get; set; }
 
         [JsonPropertyName("lastUpdatedBy")]
         public string? LastUpdatedBy { get; set; }
@@ -208,7 +133,5 @@ namespace ESLBackend.Models
 
         [JsonPropertyName("hashCode")]
         public string? HashCode { get; set; }
-
     }
-
 }

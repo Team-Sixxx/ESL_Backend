@@ -254,18 +254,24 @@ using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//{
+//    if (builder.Environment.IsDevelopment())
+//    {
+
+//        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+//        //options.UseInMemoryDatabase("AppDb");
+//    }
+//    else
+//    {
+//        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+//    }
+//});
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    if (builder.Environment.IsDevelopment())
-    {
-
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-        //options.UseInMemoryDatabase("AppDb");
-    }
-    else
-    {
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-    }
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
 builder.Services.AddScoped<DataSeeder>();
