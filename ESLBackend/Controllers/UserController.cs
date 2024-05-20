@@ -19,8 +19,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace ESLBackend.Controllers
 {
-
-    [ApiController]
+    
     [Route("[controller]")]
     public class UserController : ControllerBase
     {

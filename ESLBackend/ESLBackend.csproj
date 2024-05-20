@@ -36,4 +36,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="EFCore\" />
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

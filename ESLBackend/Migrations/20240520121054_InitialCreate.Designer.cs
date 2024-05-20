@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESLBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240517075534_UpdatedTemplate")]
-    partial class UpdatedTemplate
+    [Migration("20240520121054_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,59 +24,212 @@ namespace ESLBackend.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("ESLBackend.Models.Organization", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("Country")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("Enable")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Organizations");
+                });
+
             modelBuilder.Entity("ESLBackend.Models.Templates", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255)")
+                        .HasAnnotation("Relational:JsonPropertyName", "id");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "createdBy");
 
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("datetime(6)")
+                        .HasAnnotation("Relational:JsonPropertyName", "createdTime");
 
                     b.Property<string>("GoodsCode")
-                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "goodsCode");
+
+                    b.Property<string>("GoodsName")
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "goodsName");
+
+                    b.Property<string>("HashCode")
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "hashCode");
+
+                    b.Property<string>("LastUpdatedBy")
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "lastUpdatedBy");
+
+                    b.Property<DateTime?>("LastUpdatedTime")
+                        .HasColumnType("datetime(6)")
+                        .HasAnnotation("Relational:JsonPropertyName", "lastUpdatedTime");
+
+                    b.Property<string>("ShopCode")
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "shopCode");
+
+                    b.Property<string>("TemplateContent")
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "template");
+
+                    b.Property<string>("TemplateType")
+                        .HasColumnType("longtext")
+                        .HasAnnotation("Relational:JsonPropertyName", "templateType");
+
+                    b.Property<int?>("Version")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "version");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Templates");
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.Templates+Item", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("GoodsCode")
                         .HasColumnType("longtext");
 
                     b.Property<string>("GoodsName")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("HashCode")
+                    b.Property<string>("Origin")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Items")
+                    b.Property<string>("Price1")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("LastUpdatedBy")
+                    b.Property<string>("Price2")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime>("LastUpdatedTime")
-                        .HasColumnType("datetime(6)");
+                    b.Property<string>("Price3")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PriceClerk")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Raid")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SalTimeEnd")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SalTimeStart")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("ShopCode")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Spec")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("TemplateType")
+                    b.Property<string>("TemplatesId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Unit")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Upc")
+                    b.Property<string>("Upc1")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
+                    b.Property<string>("Upc2")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Upc3")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Templates");
+                    b.HasIndex("TemplatesId");
+
+                    b.ToTable("Items");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "items");
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.Templates+Upc", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("GoodsCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("TemplatesId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplatesId");
+
+                    b.ToTable("Upcs");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "upcs");
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool?>("Enable")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("OrganizationId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ESLBackend.models.MeetingRoom", b =>
@@ -87,15 +240,13 @@ namespace ESLBackend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Capacity")
+                    b.Property<int?>("Capacity")
                         .HasColumnType("int");
 
                     b.Property<string>("Location")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -299,6 +450,37 @@ namespace ESLBackend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ESLBackend.Models.Templates+Item", b =>
+                {
+                    b.HasOne("ESLBackend.Models.Templates", "Templates")
+                        .WithMany("Items")
+                        .HasForeignKey("TemplatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Templates");
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.Templates+Upc", b =>
+                {
+                    b.HasOne("ESLBackend.Models.Templates", "Templates")
+                        .WithMany("Upcs")
+                        .HasForeignKey("TemplatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Templates");
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.User", b =>
+                {
+                    b.HasOne("ESLBackend.Models.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId");
+
+                    b.Navigation("Organization");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -348,6 +530,13 @@ namespace ESLBackend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.Templates", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Upcs");
                 });
 #pragma warning restore 612, 618
         }

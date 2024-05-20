@@ -17,7 +17,7 @@ namespace ESLBackend.Controllers
         {
             _context = context;
         }
-
+        [AllowAnonymous]
         [Authorize]
         [HttpGet]
         public IActionResult GetMeetingRooms()
