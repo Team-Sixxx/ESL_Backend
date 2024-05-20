@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ESLBackend.Models
 {
-    public class User : IdentityUser
+    public class User
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

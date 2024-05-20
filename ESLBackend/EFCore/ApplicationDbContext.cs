@@ -11,7 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Templates.Upc> Upcs { get; set; }
     public DbSet<MeetingRoom> MeetingRooms { get; set; }
 
-    public new DbSet<User> Users { get; set; }
+    public DbSet<User> Users { get; set; }
     public DbSet<Organization> Organizations { get; set; }
 
 

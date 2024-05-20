@@ -21,6 +21,26 @@ namespace ESLBackend.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("ESLBackend.Models.Organization", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("Country")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("Enable")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Organizations");
+                });
+
             modelBuilder.Entity("ESLBackend.Models.Templates", b =>
                 {
                     b.Property<string>("Id")
@@ -182,6 +202,31 @@ namespace ESLBackend.Migrations
                     b.ToTable("Upcs");
 
                     b.HasAnnotation("Relational:JsonPropertyName", "upcs");
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool?>("Enable")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("OrganizationId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ESLBackend.models.MeetingRoom", b =>
@@ -422,6 +467,15 @@ namespace ESLBackend.Migrations
                         .IsRequired();
 
                     b.Navigation("Templates");
+                });
+
+            modelBuilder.Entity("ESLBackend.Models.User", b =>
+                {
+                    b.HasOne("ESLBackend.Models.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId");
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
