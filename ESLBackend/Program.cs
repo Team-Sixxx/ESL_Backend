@@ -8,8 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
 
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.Cookies;
+
 using Microsoft.AspNetCore.Authorization;
 
 
@@ -252,23 +251,6 @@ using Microsoft.Extensions.Options;
 
 
 
-
-
-
-using ESLBackend.models;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using System.Text;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -276,7 +258,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     if (builder.Environment.IsDevelopment())
     {
-        options.UseInMemoryDatabase("AppDb");
+
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+        //options.UseInMemoryDatabase("AppDb");
     }
     else
     {

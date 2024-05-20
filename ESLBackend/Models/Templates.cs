@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata;
 using System.Text.Json.Serialization;
+using static ESLBackend.Models.Templates;
 
 
 namespace ESLBackend.Models
@@ -16,50 +17,51 @@ namespace ESLBackend.Models
         public string Id { get; set; }
 
         [JsonPropertyName("createdBy")]
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
 
         [JsonPropertyName("createdTime")]
-        public DateTime CreatedTime { get; set; }
+        public DateTime? CreatedTime { get; set; }
 
         [JsonPropertyName("template")]
-        public string Template { get; set; }
+        public string? Template { get; set; }
 
         [JsonPropertyName("lastUpdatedBy")]
-        public string LastUpdatedBy { get; set; }
+        public string? LastUpdatedBy { get; set; }
 
         [JsonPropertyName("lastUpdatedTime")]
-        public DateTime LastUpdatedTime { get; set; }
+        public DateTime? LastUpdatedTime { get; set; }
 
         [JsonPropertyName("shopCode")]
-        public string ShopCode { get; set; }
+        public string? ShopCode { get; set; }
 
         [JsonPropertyName("goodsCode")]
-        public string GoodsCode { get; set; }
+        public string? GoodsCode { get; set; }
 
         [JsonPropertyName("goodsName")]
-        public string GoodsName { get; set; }
+        public string? GoodsName { get; set; }
 
         [JsonPropertyName("templateType")]
-        public string TemplateType { get; set; }
+        public string? TemplateType { get; set; }
 
         [JsonPropertyName("upc")]
-        public List<string> Upc { get; set; }
+        public List<Upc>? Upcs { get; set; }
 
         [JsonPropertyName("items")]
         public List<Item> Items { get; set; }
 
         [JsonPropertyName("version")]
-        public int Version { get; set; }
+        public int? Version { get; set; }
 
         [JsonPropertyName("hashCode")]
-        public string HashCode { get; set; }
+        public string? HashCode { get; set; }
 
         public class Item
         {
             [Key]
 
-            public string ShopCode { get; set; }
-            public string GoodsCode { get; set; }
+            public string? ShopCode { get; set; }
+            [Key]
+            public string? GoodsCode { get; set; }
             public string GoodsName { get; set; }
             public string Upc1 { get; set; }
             public string Upc2 { get; set; }
@@ -76,6 +78,19 @@ namespace ESLBackend.Models
             public string PriceClerk { get; set; }
         }
 
+
+
+
+        public class Upc
+        {
+            [Key]
+            public string GoodsCode { get; set; }
+
+
+
+        }
+
+
         public static PostTemplates MappedTemplate(Models.Templates t)
         {
             return new PostTemplates
@@ -90,7 +105,8 @@ namespace ESLBackend.Models
                 GoodsCode = t.GoodsCode,
                 GoodsName = t.GoodsName,
                 TemplateType = t.TemplateType,
-                Upc = new List<string> { t.GoodsCode, t.GoodsCode },
+                //Upc = new List<string> { , t.GoodsCode },
+                Upc = ConvertUpcToList(t.Upcs),
                 Items = ConvertItemsToList(t.Items),
                 Version = t.Version + 1,
                 HashCode = Guid.NewGuid().ToString("N").ToUpper()
@@ -114,6 +130,27 @@ namespace ESLBackend.Models
             return itemList;
         }
 
+
+
+
+        private static List<string> ConvertUpcToList(List<Upc> upcs)
+        {
+            List<string> upcList = new List<string>();
+
+            foreach (var item in upcs)
+            {
+                upcList.Add(item.GoodsCode);
+            }
+
+            return upcList;
+        }
+
+
+
+
+
+
+
         private static string GenerateRandomId()
         {
             Random random = new Random();
@@ -131,46 +168,46 @@ namespace ESLBackend.Models
     {
         [Key]
         [JsonPropertyName("id")]
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         [JsonPropertyName("createdBy")]
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
 
         [JsonPropertyName("createdTime")]
-        public DateTime CreatedTime { get; set; }
+        public DateTime? CreatedTime { get; set; }
 
         [JsonPropertyName("template")]
-        public string Template { get; set; }
+        public string? Template { get; set; }
 
         [JsonPropertyName("lastUpdatedBy")]
-        public string LastUpdatedBy { get; set; }
+        public string? LastUpdatedBy { get; set; }
 
         [JsonPropertyName("lastUpdatedTime")]
-        public DateTime LastUpdatedTime { get; set; }
+        public DateTime? LastUpdatedTime { get; set; }
 
         [JsonPropertyName("shopCode")]
-        public string ShopCode { get; set; }
+        public string? ShopCode { get; set; }
 
         [JsonPropertyName("goodsCode")]
-        public string GoodsCode { get; set; }
+        public string? GoodsCode { get; set; }
 
         [JsonPropertyName("goodsName")]
-        public string GoodsName { get; set; }
+        public string? GoodsName { get; set; }
 
         [JsonPropertyName("templateType")]
-        public string TemplateType { get; set; }
+        public string? TemplateType { get; set; }
 
         [JsonPropertyName("upc")]
         public List<string> Upc { get; set; }
 
         [JsonPropertyName("items")]
-        public List<string> Items { get; set; }
+        public List<string>? Items { get; set; }
 
         [JsonPropertyName("version")]
-        public int Version { get; set; }
+        public int? Version { get; set; }
 
         [JsonPropertyName("hashCode")]
-        public string HashCode { get; set; }
+        public string? HashCode { get; set; }
 
     }
 

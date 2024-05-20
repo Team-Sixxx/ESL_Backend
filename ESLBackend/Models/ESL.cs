@@ -6,9 +6,9 @@ namespace ESLBackend.Models
 {
     public class ESL
     {
-        public int Id { get; set; }
-        public int StoreNumber { get; set; }
-        public int TagId { get; set; }
+        public int? Id { get; set; }
+        public int? StoreNumber { get; set; }
+        public int? TagId { get; set; }
         // You can add more properties as needed
     }
 
@@ -17,10 +17,10 @@ namespace ESLBackend.Models
     public class BindESL
     {
         [JsonPropertyName("shopCode")]
-        public string ShopCode { get; set; }
+        public string? ShopCode { get; set; }
 
         [JsonPropertyName("binds")]
-        public List<Bind> Binds { get; set; }
+        public List<Bind>? Binds { get; set; }
 
 
 
@@ -44,21 +44,16 @@ namespace ESLBackend.Models
 
     }
 
-
-
     public class Bind
     {
         [JsonPropertyName("tagID")]
-        public string TagID { get; set; }
-
-        
+        public string? TagID { get; set; }
 
         [JsonPropertyName("goodsCode")]
-        public string GoodsCode { get; set; }
+        public string? GoodsCode { get; set; }
     }
 
 
-   
 
 
 
