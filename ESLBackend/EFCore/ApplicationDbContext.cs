@@ -38,16 +38,16 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .HasKey(u => u.Id);
 
         modelBuilder.Entity<Templates>()
-            .HasMany(t => t.Items)
-            .WithOne(i => i.Templates)
-            .HasForeignKey(i => i.TemplatesId);
+            .HasMany(t => t.Items);
+            
+           
 
 
 
         modelBuilder.Entity<Templates>()
-            .HasMany(t => t.Upcs)
-            .WithOne(u => u.Templates)
-            .HasForeignKey(u => u.TemplatesId);
+            .HasMany(t => t.Upcs);
+            
+          
 
 
 

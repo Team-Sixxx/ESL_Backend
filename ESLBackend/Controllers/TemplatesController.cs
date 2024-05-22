@@ -31,7 +31,7 @@ namespace ESLBackend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetTemplate(string id)
+        public async Task<IActionResult> GetTemplate(int id)
         {
             var template = _context.Templates.FirstOrDefault(t => t.Id == id);
             if (template == null)
@@ -45,8 +45,18 @@ namespace ESLBackend.Controllers
 
 
         [HttpPost("Goods")]
-        public async Task<IActionResult> PostandPatchGoods(Models.Templates template)
+        public async Task<IActionResult> PostandPatchGoods([FromBody] Templates template)
         {
+
+
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+
             var ESLtoken = HttpContext.Session.GetString("token");
 
             if (string.IsNullOrEmpty(ESLtoken))
@@ -128,11 +138,6 @@ namespace ESLBackend.Controllers
             }
         }
 
-
-
-
-
-
         public class Token
     {
         [JsonPropertyName("message")]
@@ -149,7 +154,7 @@ namespace ESLBackend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTemplate(string id, Templates template)
+        public async Task<IActionResult> UpdateTemplate(int id, Templates template)
         {
             if (id != template.Id)
             {
@@ -181,7 +186,7 @@ namespace ESLBackend.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTemplate(string id)
+        public async Task<IActionResult> DeleteTemplate(int id)
         {
             var template = _context.Templates.FirstOrDefault(t => t.Id == id);
             if (template == null)

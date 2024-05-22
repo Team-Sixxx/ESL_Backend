@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace ESLBackend.Models
@@ -9,7 +10,8 @@ namespace ESLBackend.Models
     {
         [Key]
         [JsonPropertyName("id")]
-        public string Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         [JsonPropertyName("createdBy")]
         public string? CreatedBy { get; set; }
@@ -18,7 +20,8 @@ namespace ESLBackend.Models
         public DateTime? CreatedTime { get; set; }
 
         [JsonPropertyName("template")]
-        public string? TemplateContent { get; set; }
+        [Required]
+        public string? Template { get; set; }
 
         [JsonPropertyName("lastUpdatedBy")]
         public string? LastUpdatedBy { get; set; }
@@ -50,7 +53,7 @@ namespace ESLBackend.Models
         [JsonPropertyName("hashCode")]
         public string? HashCode { get; set; }
 
-        public static PostTemplates MappedTemplate(Models.Templates t)
+        public static PostTemplates MappedTemplate(Templates t)
         {
             return new PostTemplates
             {
@@ -63,13 +66,13 @@ namespace ESLBackend.Models
                 GoodsCode = t.GoodsCode,
                 GoodsName = t.GoodsName,
                 TemplateType = t.TemplateType,
+                Template = "Meeting",
                 Upc = new List<string> { t.GoodsCode, t.GoodsCode },
                 Items = ConvertItemsToList(t.Items),
                 Version = t.Version + 1,
                 HashCode = Guid.NewGuid().ToString("N").ToUpper()
             };
         }
-
 
         private static List<string> ConvertItemsToList(List<Item> items)
         {
@@ -78,10 +81,10 @@ namespace ESLBackend.Models
             foreach (var item in items)
             {
                 itemList.AddRange(new string[] {
-            item.ShopCode, item.GoodsCode, item.GoodsName, item.Upc1, item.Upc2,
-            item.Upc3, item.Price1, item.Price2, item.Price3, item.Origin,
-            item.Spec, item.Unit, item.Raid, item.SalTimeStart, item.SalTimeEnd, item.PriceClerk
-        });
+                    item.ShopCode, item.GoodsCode, item.GoodsName, item.Upc1, item.Upc2,
+                    item.Upc3, item.Price1, item.Price2, item.Price3, item.Origin,
+                    item.Spec, item.Unit, item.Raid, item.SalTimeStart, item.SalTimeEnd, item.PriceClerk
+                });
             }
 
             return itemList;
@@ -98,10 +101,10 @@ namespace ESLBackend.Models
             return string.Join("", parts.Select(p => p.ToString("D4")));
         }
 
-
         public class Item
         {
             [Key]
+            [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
             public int Id { get; set; }
             public string? ShopCode { get; set; }
             public string? GoodsCode { get; set; }
@@ -120,16 +123,17 @@ namespace ESLBackend.Models
             public string SalTimeEnd { get; set; }
             public string PriceClerk { get; set; }
             public string TemplatesId { get; set; }
-            public Templates Templates { get; set; }
+            
         }
 
         public class Upc
         {
             [Key]
+            [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
             public int Id { get; set; }
             public string GoodsCode { get; set; }
             public string TemplatesId { get; set; }
-            public Templates Templates { get; set; }
+            // Removed the Templates property from Upc to avoid type mismatch
         }
     }
 
@@ -146,7 +150,7 @@ namespace ESLBackend.Models
         public DateTime? CreatedTime { get; set; }
 
         [JsonPropertyName("template")]
-        public string? TemplateContent { get; set; }
+        public string? Template { get; set; }
 
         [JsonPropertyName("lastUpdatedBy")]
         public string? LastUpdatedBy { get; set; }
