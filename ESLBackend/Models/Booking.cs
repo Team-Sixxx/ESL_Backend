@@ -7,7 +7,7 @@
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string User { get; set; }
-
+        public bool isLive { get; set; }
         public int MeetingRoomId { get; set; }
         
     }
