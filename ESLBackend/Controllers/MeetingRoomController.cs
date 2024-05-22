@@ -62,6 +62,7 @@ namespace ESLBackend.Controllers
             existingRoom.Name = room.Name;
             existingRoom.Capacity = room.Capacity;
             existingRoom.Location = room.Location;
+            existingRoom.templateId = room.templateId;
 
             _context.SaveChanges();
 

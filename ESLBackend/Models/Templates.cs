@@ -50,10 +50,54 @@ namespace ESLBackend.Models
         [JsonPropertyName("hashCode")]
         public string? HashCode { get; set; }
 
-        internal static PostTemplates MappedTemplate(Templates template)
+        public static PostTemplates MappedTemplate(Models.Templates t)
         {
-            throw new NotImplementedException();
+            return new PostTemplates
+            {
+                Id = GenerateRandomId(),
+                CreatedBy = "System",
+                CreatedTime = DateTime.Now,
+                LastUpdatedBy = "System",
+                LastUpdatedTime = t.LastUpdatedTime,
+                ShopCode = "0003",
+                GoodsCode = t.GoodsCode,
+                GoodsName = t.GoodsName,
+                TemplateType = t.TemplateType,
+                Upc = new List<string> { t.GoodsCode, t.GoodsCode },
+                Items = ConvertItemsToList(t.Items),
+                Version = t.Version + 1,
+                HashCode = Guid.NewGuid().ToString("N").ToUpper()
+            };
         }
+
+
+        private static List<string> ConvertItemsToList(List<Item> items)
+        {
+            List<string> itemList = new List<string>();
+
+            foreach (var item in items)
+            {
+                itemList.AddRange(new string[] {
+            item.ShopCode, item.GoodsCode, item.GoodsName, item.Upc1, item.Upc2,
+            item.Upc3, item.Price1, item.Price2, item.Price3, item.Origin,
+            item.Spec, item.Unit, item.Raid, item.SalTimeStart, item.SalTimeEnd, item.PriceClerk
+        });
+            }
+
+            return itemList;
+        }
+
+        private static string GenerateRandomId()
+        {
+            Random random = new Random();
+            int[] parts = new int[3];
+            for (int i = 0; i < parts.Length; i++)
+            {
+                parts[i] = random.Next(0, 10000);
+            }
+            return string.Join("", parts.Select(p => p.ToString("D4")));
+        }
+
 
         public class Item
         {

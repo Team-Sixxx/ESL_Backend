@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,16 +24,21 @@ namespace ESLBackend.Controllers
             return Ok(bookingRooms);
         }
 
+        [AllowAnonymous]
+
         [HttpGet("{id}")]
         public IActionResult GetBookingRoom(int id)
         {
-            var bookingRoom = _context.BookingRooms.FirstOrDefault(r => r.MeetingRoomId == id);
-            if (bookingRoom == null)
+            var bookingRooms = _context.BookingRooms
+                                       .Where(r => r.MeetingRoomId == id)
+                                       .ToList();
+            if (bookingRooms == null || !bookingRooms.Any())
             {
                 return NotFound();
             }
-            return Ok(bookingRoom);
+            return Ok(bookingRooms);
         }
+
 
         [HttpPost]
         public IActionResult CreateBookingRoom(Models.Booking room)
@@ -48,15 +54,15 @@ namespace ESLBackend.Controllers
 
 
 
-            // Get the current date and time
-            DateTime currentDateTime = DateTime.Now;
+            //// Get the current date and time
+            //DateTime currentDateTime = DateTime.Now;
 
-            // Set the start time to the current date and time
-            room.StartTime = currentDateTime;
+            //// Set the start time to the current date and time
+            //room.StartTime = currentDateTime;
 
-            // Add 2 hours to the current date and time to get the end time
-            DateTime endDateTime = currentDateTime.AddHours(2);
-            room.EndTime = endDateTime;
+            //// Add 2 hours to the current date and time to get the end time
+            //DateTime endDateTime = currentDateTime.AddHours(2);
+            //room.EndTime = endDateTime;
 
 
 
