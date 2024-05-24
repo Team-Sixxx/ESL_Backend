@@ -21,6 +21,9 @@ using System.Threading.Tasks;
             _configuration = configuration;
     }
 
+
+    //for in memory testing
+
         //public async Task SeedTestUsersAsync()
         //{
         //    using var scope = _serviceProvider.CreateScope();
@@ -48,8 +51,6 @@ using System.Threading.Tasks;
 
 
     //for mysql
-
-
     public async Task SeedTestUsersAsync()
     {
         using var scope = _serviceProvider.CreateScope();
@@ -84,18 +85,9 @@ using System.Threading.Tasks;
         }
         catch (Exception ex)
         {
-            // Log the exception
-            // _logger.LogError(ex, "An error occurred while seeding test users.");
-
-            throw; // Re-throw the exception to ensure it is not swallowed
+            throw; 
         }
     }
-
-
-
-
-
-
 
     public class TestUser
     {

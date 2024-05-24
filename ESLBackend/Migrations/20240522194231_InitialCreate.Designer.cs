@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESLBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240522194231_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,12 +138,9 @@ namespace ESLBackend.Migrations
 
             modelBuilder.Entity("ESLBackend.Models.Templates", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)")
                         .HasAnnotation("Relational:JsonPropertyName", "id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("longtext")
@@ -174,8 +174,7 @@ namespace ESLBackend.Migrations
                         .HasColumnType("longtext")
                         .HasAnnotation("Relational:JsonPropertyName", "shopCode");
 
-                    b.Property<string>("Template")
-                        .IsRequired()
+                    b.Property<string>("TemplateContent")
                         .HasColumnType("longtext")
                         .HasAnnotation("Relational:JsonPropertyName", "template");
 
@@ -248,10 +247,7 @@ namespace ESLBackend.Migrations
 
                     b.Property<string>("TemplatesId")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int?>("TemplatesId1")
-                        .HasColumnType("int");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Unit")
                         .IsRequired()
@@ -271,7 +267,7 @@ namespace ESLBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TemplatesId1");
+                    b.HasIndex("TemplatesId");
 
                     b.ToTable("Items");
 
@@ -292,14 +288,11 @@ namespace ESLBackend.Migrations
 
                     b.Property<string>("TemplatesId")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int?>("TemplatesId1")
-                        .HasColumnType("int");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TemplatesId1");
+                    b.HasIndex("TemplatesId");
 
                     b.ToTable("Upcs");
 
@@ -348,8 +341,8 @@ namespace ESLBackend.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("templateId")
-                        .HasColumnType("int");
+                    b.Property<string>("templateId")
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -565,16 +558,24 @@ namespace ESLBackend.Migrations
 
             modelBuilder.Entity("ESLBackend.Models.Templates+Item", b =>
                 {
-                    b.HasOne("ESLBackend.Models.Templates", null)
+                    b.HasOne("ESLBackend.Models.Templates", "Templates")
                         .WithMany("Items")
-                        .HasForeignKey("TemplatesId1");
+                        .HasForeignKey("TemplatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Templates");
                 });
 
             modelBuilder.Entity("ESLBackend.Models.Templates+Upc", b =>
                 {
-                    b.HasOne("ESLBackend.Models.Templates", null)
+                    b.HasOne("ESLBackend.Models.Templates", "Templates")
                         .WithMany("Upcs")
-                        .HasForeignKey("TemplatesId1");
+                        .HasForeignKey("TemplatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Templates");
                 });
 
             modelBuilder.Entity("ESLBackend.Models.User", b =>

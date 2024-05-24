@@ -9,6 +9,7 @@ using System.Text;
 using System.Dynamic;
 using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ESLBackend.Controllers
 {
@@ -44,18 +45,16 @@ namespace ESLBackend.Controllers
         private static readonly HttpClient client = new HttpClient();
 
 
+
+
         [HttpPost("Goods")]
         public async Task<IActionResult> PostandPatchGoods([FromBody] Templates template)
         {
-
-
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-
 
             var ESLtoken = HttpContext.Session.GetString("token");
 
@@ -65,13 +64,11 @@ namespace ESLBackend.Controllers
             }
 
             Models.PostTemplates a = Models.Templates.MappedTemplate(template);
-
-            string serializedJson = JsonSerializer.Serialize(a);
-
-            // Print the JSON content before posting
-            Console.WriteLine("JSON Content:");
-            Console.WriteLine(serializedJson);
-
+            
+            // testing
+            //string serializedJson = JsonSerializer.Serialize(a);
+            //Console.WriteLine("JSON Content:");
+            //Console.WriteLine(serializedJson);
 
             using StringContent jsonContent = new(
               JsonSerializer.Serialize(a),
@@ -99,7 +96,7 @@ namespace ESLBackend.Controllers
 
 
 
-
+        [Authorize]
         [HttpPost("bind/esl")]
         public async Task<IActionResult> BindESL(Models.BindESL ESL)
         {
@@ -184,6 +181,8 @@ namespace ESLBackend.Controllers
 
             return NoContent();
         }
+
+        [Authorize]
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTemplate(int id)

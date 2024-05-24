@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESLBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240520212011_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240522201035_UpdateTemplates")]
+    partial class UpdateTemplates
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,20 +32,17 @@ namespace ESLBackend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BindESLId")
-                        .HasColumnType("int");
-
                     b.Property<string>("GoodsCode")
+                        .IsRequired()
                         .HasColumnType("longtext")
                         .HasAnnotation("Relational:JsonPropertyName", "goodsCode");
 
                     b.Property<string>("TagID")
+                        .IsRequired()
                         .HasColumnType("longtext")
                         .HasAnnotation("Relational:JsonPropertyName", "tagID");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BindESLId");
 
                     b.ToTable("Binds");
 
@@ -58,9 +55,8 @@ namespace ESLBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("ShopCode")
+                        .IsRequired()
                         .HasColumnType("longtext")
                         .HasAnnotation("Relational:JsonPropertyName", "shopCode");
 
@@ -93,6 +89,9 @@ namespace ESLBackend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("isLive")
+                        .HasColumnType("tinyint(1)");
+
                     b.HasKey("Id");
 
                     b.ToTable("BookingRooms");
@@ -100,16 +99,16 @@ namespace ESLBackend.Migrations
 
             modelBuilder.Entity("ESLBackend.Models.ESL", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int?>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("StoreNumber")
+                    b.Property<int>("StoreNumber")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TagId")
+                    b.Property<int>("TagId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -175,7 +174,8 @@ namespace ESLBackend.Migrations
                         .HasColumnType("longtext")
                         .HasAnnotation("Relational:JsonPropertyName", "shopCode");
 
-                    b.Property<string>("TemplateContent")
+                    b.Property<string>("Template")
+                        .IsRequired()
                         .HasColumnType("longtext")
                         .HasAnnotation("Relational:JsonPropertyName", "template");
 
@@ -340,6 +340,9 @@ namespace ESLBackend.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("templateId")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -543,37 +546,33 @@ namespace ESLBackend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ESLBackend.Models.Bind", b =>
+            modelBuilder.Entity("ESLBackend.Models.BindESL", b =>
                 {
-                    b.HasOne("ESLBackend.Models.BindESL", "BindESL")
-                        .WithMany("Binds")
-                        .HasForeignKey("BindESLId")
+                    b.HasOne("ESLBackend.Models.Bind", "Binds")
+                        .WithOne()
+                        .HasForeignKey("ESLBackend.Models.BindESL", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("BindESL");
+                    b.Navigation("Binds");
                 });
 
             modelBuilder.Entity("ESLBackend.Models.Templates+Item", b =>
                 {
-                    b.HasOne("ESLBackend.Models.Templates", "Templates")
+                    b.HasOne("ESLBackend.Models.Templates", null)
                         .WithMany("Items")
                         .HasForeignKey("TemplatesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Templates");
                 });
 
             modelBuilder.Entity("ESLBackend.Models.Templates+Upc", b =>
                 {
-                    b.HasOne("ESLBackend.Models.Templates", "Templates")
+                    b.HasOne("ESLBackend.Models.Templates", null)
                         .WithMany("Upcs")
                         .HasForeignKey("TemplatesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Templates");
                 });
 
             modelBuilder.Entity("ESLBackend.Models.User", b =>
@@ -634,11 +633,6 @@ namespace ESLBackend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ESLBackend.Models.BindESL", b =>
-                {
-                    b.Navigation("Binds");
                 });
 
             modelBuilder.Entity("ESLBackend.Models.Templates", b =>

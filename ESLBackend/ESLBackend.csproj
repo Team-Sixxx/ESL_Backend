@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Businesslogicc\" />
     <Folder Include="EFCore\" />
     <Folder Include="Migrations\" />
   </ItemGroup>

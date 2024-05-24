@@ -70,17 +70,19 @@ namespace ESLBackend.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "BindESLs",
+                name: "Binds",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ShopCode = table.Column<string>(type: "longtext", nullable: true)
+                    TagID = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    GoodsCode = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BindESLs", x => x.Id);
+                    table.PrimaryKey("PK_Binds", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -95,6 +97,7 @@ namespace ESLBackend.Migrations
                     EndTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     User = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    isLive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     MeetingRoomId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -109,8 +112,8 @@ namespace ESLBackend.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    StoreNumber = table.Column<int>(type: "int", nullable: true),
-                    TagId = table.Column<int>(type: "int", nullable: true)
+                    StoreNumber = table.Column<int>(type: "int", nullable: false),
+                    TagId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -128,6 +131,8 @@ namespace ESLBackend.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Capacity = table.Column<int>(type: "int", nullable: true),
                     Location = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    templateId = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -313,24 +318,20 @@ namespace ESLBackend.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Binds",
+                name: "BindESLs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    TagID = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    BindESLId = table.Column<int>(type: "int", nullable: false),
-                    GoodsCode = table.Column<string>(type: "longtext", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    ShopCode = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Binds", x => x.Id);
+                    table.PrimaryKey("PK_BindESLs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Binds_BindESLs_BindESLId",
-                        column: x => x.BindESLId,
-                        principalTable: "BindESLs",
+                        name: "FK_BindESLs_Binds_Id",
+                        column: x => x.Id,
+                        principalTable: "Binds",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -475,11 +476,6 @@ namespace ESLBackend.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Binds_BindESLId",
-                table: "Binds",
-                column: "BindESLId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Items_TemplatesId",
                 table: "Items",
                 column: "TemplatesId");
@@ -514,7 +510,7 @@ namespace ESLBackend.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Binds");
+                name: "BindESLs");
 
             migrationBuilder.DropTable(
                 name: "BookingRooms");
@@ -541,7 +537,7 @@ namespace ESLBackend.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "BindESLs");
+                name: "Binds");
 
             migrationBuilder.DropTable(
                 name: "Templates");

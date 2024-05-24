@@ -25,7 +25,6 @@ namespace ESLBackend.Controllers
         }
 
         [AllowAnonymous]
-
         [HttpGet("{id}")]
         public IActionResult GetBookingRoom(int id)
         {
@@ -39,7 +38,7 @@ namespace ESLBackend.Controllers
             return Ok(bookingRooms);
         }
 
-
+        [Authorize]
         [HttpPost]
         public IActionResult CreateBookingRoom(Models.Booking room)
         {
@@ -50,44 +49,25 @@ namespace ESLBackend.Controllers
             }
 
 
-
-
-
-
-            //// Get the current date and time
-            //DateTime currentDateTime = DateTime.Now;
-
-            //// Set the start time to the current date and time
-            //room.StartTime = currentDateTime;
-
-            //// Add 2 hours to the current date and time to get the end time
-            //DateTime endDateTime = currentDateTime.AddHours(2);
-            //room.EndTime = endDateTime;
-
-
-
-
-
             // Check for overlapping bookings in the same room
             var overlappingBooking = _context.BookingRooms
                 .Where(r => r.MeetingRoomId == room.MeetingRoomId)
                 .Where(r => r.StartTime < room.EndTime && room.StartTime < r.EndTime)
                 .FirstOrDefault();
 
-            // If there's an overlapping booking, return a conflict response
+            // If any
             if (overlappingBooking != null)
             {
                 return Conflict(new { Message = "The room is already booked for the specified time period." });
             }
 
-            // If there's no overlap, proceed with the booking
+            // no overlap, proceed with the booking
             _context.BookingRooms.Add(room);
             _context.SaveChanges();
             return CreatedAtAction(nameof(GetBookingRoom), new { id = room.Id }, room);
         }
 
-
-
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult UpdateBookingRoom(int id, Models.Booking room)
         {
@@ -113,6 +93,7 @@ namespace ESLBackend.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult DeleteBookingRoom(int id)
         {

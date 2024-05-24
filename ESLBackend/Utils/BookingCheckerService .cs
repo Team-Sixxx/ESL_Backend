@@ -130,12 +130,9 @@ namespace ESLBackend.Utils
         }
                             };
 
+                            var status = CallPostandPatchGoodsController(newTemplate).GetAwaiter().GetResult();
 
-
-
-                            //var status = CallPostandPatchGoodsController(newTemplate).GetAwaiter().GetResult();
-
-                            var status = "false";
+                            //var status = "false";
 
                             if(status == "success")
                             {
@@ -149,23 +146,13 @@ namespace ESLBackend.Utils
 
                             }
 
-                          
-
-
-
                         }
 
-
                     }
-
 
                 }
             }
         }
-
-
-
-
 
         public class Token
         {
@@ -215,8 +202,6 @@ namespace ESLBackend.Utils
                 _logger.LogInformation(responseBody);
 
               
-
-
                 var tokenResponse = JsonSerializer.Deserialize<Token>(responseBody);
 
                 if (tokenResponse?.Message == "success")
@@ -234,8 +219,6 @@ namespace ESLBackend.Utils
             }
         
 
-
-
             catch (Exception ex)
             {
                 _logger.LogError("Exception occurred while calling PostandPatchGoods: {Message}", ex.Message);
@@ -245,30 +228,11 @@ namespace ESLBackend.Utils
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         private static readonly HttpClient client = new HttpClient();
 
         private async Task<string> getToken()
         {
          
-     
-
 
             try
             {
@@ -292,9 +256,7 @@ namespace ESLBackend.Utils
 
                 Console.WriteLine(responseBody);
 
-
                 Token? token = JsonSerializer.Deserialize<Token>(responseBody);
-
 
 
                 return token?.body;
@@ -305,20 +267,6 @@ namespace ESLBackend.Utils
                 return null;
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         public Task StopAsync(CancellationToken cancellationToken)
